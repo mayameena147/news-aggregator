@@ -1,6 +1,7 @@
 const tap = require('tap');
 const supertest = require('supertest');
 const app = require('../app');
+const { getUserPreferences } = require('../userController');
 const server = supertest(app);
 
 const mockUser = {
