@@ -14,39 +14,39 @@ async function getNews(req, res) {
 
 // Function to mark an article as read by a user
 async function markArticleAsRead(req, res) {
-    try {
-            if (!req.body.user.readArticles.includes(req.params.id)) {
-            user.readArticles.push(req.params.id);
-            await user.save();
-            console.log(`Article ${req.params.id} marked as read for user ${req.body.user.name}`);
-        } else {
-            console.log(`Article ${req.params.id} is already marked as read for user ${req.body.user.name}`);
-        }
+    try {   
+            let user = req.body.user
+            if (!user.readArticles.includes(req.params.id)) {
+                user.readArticles.push(req.params.id);
+                await user.save();
+                res.status(200).send(`Article ${req.params.id} marked as read for user ${user.name}`);
+            } else {
+                res.status(200).send(`Article ${req.params.id} is already marked as read for user ${user.name}`);
+            }
     } catch (error) {
-        console.error('Error marking article as read:', error);
+        res.status(500).send('Error marking article as read:', error);
     }
 }
 
 // Function to mark an article as favorite by a user
 async function markArticleAsFavorite(req, res) {
     try {
+        let user = req.body.user
          if (!user.favoriteArticles.includes(req.params.id)) {
             user.favoriteArticles.push(req.params.id);
             await user.save();
-            console.log(`Article ${req.params.id} marked as favorite for user ${req.body.user.name}`);
+            res.status(200).send(`Article ${req.params.id} marked as favorite for user ${user.name}`);
         } else {
-            console.log(`Article ${req.params.id} is already marked as favorite for user ${req.body.user.name}`);
+            res.status(200).send(`Article ${req.params.id} is already marked as favorite for user ${user.name}`);
         }
     } catch (error) {
-        console.error('Error marking article as favorite:', error);
+        res.status(500).send('Error marking article as favorite:', error);
     }
 }
 
 const getReadNews = async (req, res) => {
     try {
-        // Fetch articles where the article's ID is in req.user.read
-        const readArticleIds = req.user.read;
-
+        const readArticleIds = req.body.user.read;
         const articles = await Article.find({
             _id: { $in: readArticleIds } 
         });
@@ -61,7 +61,7 @@ const getReadNews = async (req, res) => {
 async function getFavoriteNews(req, res) {
     try {
         // Fetch articles where the article's ID is in req.user.read
-        const favoriteArticleIds = req.user.read;
+        const favoriteArticleIds = req.body.user.read;
 
         const articles = await Article.find({
             _id: { $in: favoriteArticleIds } 
